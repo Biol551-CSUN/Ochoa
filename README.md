@@ -6,5 +6,5 @@ This Repository will be used during the **Spring 2022** Semester for Biol 551. I
 
 Information will be separate by folder starting with the corresponding week followed by three subfolders: _data, scripts, and output_. 
 
-ReadME created on 2022.02.04 
-GO SCIENCE 
+> ReadME created on 2022.02.04 
+> GO SCIENCE 
