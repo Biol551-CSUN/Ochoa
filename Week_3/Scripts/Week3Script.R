@@ -5,7 +5,7 @@
 #### Install packages being used beforehand ####
 
 ### load libraries ###
-library(palmerpenguins) #loads palmer penguins data set 
+library(palmerpenguins) #loads Palmer penguins data set 
 library(tidyverse)
 
 ### starting Data Analysis ###
