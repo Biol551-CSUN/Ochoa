@@ -8,3 +8,4 @@ Information will be separate by folder starting with the corresponding week foll
 
 ### ReadME created on 2022.02.04 ####
 ### GO SCIENCE ####
+
