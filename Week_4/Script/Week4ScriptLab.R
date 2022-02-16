@@ -19,7 +19,7 @@ penguins %>%
              variance_bodymass = var(body_mass_g, na.rm = TRUE)) %>% 
   drop_na(species, sex, island)
 
-penguins %>% 
+plot <- penguins %>% 
   filter(sex == "female") %>% 
   mutate(log_bodymass = log(body_mass_g)) %>% 
   select(species, island, sex, log_bodymass) %>% 
@@ -28,3 +28,5 @@ penguins %>%
   labs(y = "Log Body Mass (g)", x = "Species", title = "Penguins") + 
   theme_linedraw() + 
   theme(plot.title= element_text(hjust = 0.5))
+
+ggsave(here("Week_4", "Output", "penguinlab.png"), plot)

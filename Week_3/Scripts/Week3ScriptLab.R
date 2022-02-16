@@ -18,6 +18,8 @@ ggplot(data = penguins,
   theme(plot.title = element_text(hjust = 0.5)) + 
   scale_color_manual(values = beyonce_palette(90)) + 
   theme_light()
-pggsave(here("Week_3", "Output", "penguin2.png"))
+
+ggsave(here("Week_3", "Output", "Penguin2lab.png"))
+
 
         
