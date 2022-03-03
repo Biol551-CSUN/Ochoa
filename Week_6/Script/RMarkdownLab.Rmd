@@ -1,0 +1,69 @@
+---
+title: "Site Characteristics Measurements"
+author: "Ashlee"
+date: "3/3/2022"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/',
+                      warning = FALSE, message = FALSE) ### saving to Output folder 
+```
+
+# **Intro** 
+Today I will be working with the _"site.characteristics.data"_ from Week 5 for my R Markdown.
+This will create 
+
+* Output 
+* Script 
+
+# **Loading Libraries** 
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(kableExtra)
+library(here)
+```
+
+# **Loading Data**
+```{r}
+SiteData<- read_csv(here("Week_5", "Data", "site.characteristics.data.csv")) #loading Data 
+view(SiteData)
+glimpse(SiteData)
+```
+# **Insert Table**
+```{r}
+SiteData %>% 
+  group_by(site.letter) %>% ### grouping by site names listed 
+  summarise(mean.values = mean(values, na.rm = TRUE)) %>% ##3 average of values 
+  kbl() %>% ## Kable to create a table 
+  kable_material() %>% ## kable style 
+  kable_styling(full_width = FALSE)
+view(SiteData)
+```
+# **Insert plot**
+```{r SiteData}
+SiteData1 <- SiteData %>% 
+  select(name, site.letter, parameter.measured, values) %>%  ## selecting specific columns from dataset
+  mutate(name, site.letter, parameter.measured, values)# Creating new columns from selected data set 
+
+SiteData2<- SiteData1 %>% 
+   mutate(mean.values= mean(values, na.rm = TRUE)) ## creating new coulmn with the average of values 
+ 
+SiteData2 %>% 
+  ggplot(aes(x=parameter.measured, y= mean.values, ## creating plot with selected Data 
+             color = name))+
+  geom_jitter()+ ## creating jitter plot 
+  labs(x= "Parameter", y= "Mean Values", title = "Parameters Measured per Site",
+       color = "Name") + ## labels for X and Y axis. Grouping by color using names 
+  theme_light()+ ## theme light comes before text element to avoid overwriting 
+  theme(axis.text.x = element_text(angle = 90),
+        plot.title = element_text(hjust = 0.5))
+ #ggplot(aes(x= values, y= parameter.measured, group = name))+
+ # geom_jitter()
+```
+

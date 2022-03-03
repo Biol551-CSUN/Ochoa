@@ -1,0 +1,46 @@
+---
+title: "Penguins_Rmarkdown"
+author: "Ashlee"
+date: "3/3/2022"
+output: 
+  html_document:
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/', warning = FALSE, message = FALSE) 
+## ".." means to go up a level so into Week_6, "/output/" saves to output folder 
+```
+
+# Intro 
+
+Today we will be plotting the penguin data using R markdown.
+
+# Load Libraries 
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(palmerpenguins)
+library(kableExtra)
+```
+
+# Inspect Data
+```{r}
+glimpse(penguins)
+```
+
+# Make a plot
+```{r penguin1, fig.width=3, fig.height=4, fig.asp=1.2, fig.align='center', fig.cap="This is a plot of Penguins"}
+penguins %>% 
+  ggplot(aes(x= flipper_length_mm, y= bill_length_mm))+
+  geom_point()
+```
+# Insert Table 
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarise(billmean= mean(bill_length_mm, na.rm = TRUE)) %>% 
+  kbl() %>% ## make a kable table
+  kable_classic() %>% 
+  row_spec(2, bold = T, color = "white", background = "red") %>% 
+  kable_styling(full_width = FALSE)
