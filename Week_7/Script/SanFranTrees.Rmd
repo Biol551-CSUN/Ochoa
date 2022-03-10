@@ -1,0 +1,80 @@
+---
+title: "San Francisco Trees"
+author: "Ashlee"
+date: "3/8/2022"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: darkly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro 
+
+For today's lab assignment I will be using the Tidy Tuesday data on San Francisco Trees from 2020-01-28
+
+# Load Libraries 
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(maps)
+library(mapdata)
+library(mapproj)
+library(ggplot2)
+```
+
+# Load Data 
+```{r, warning=FALSE, message=FALSE}
+# Get the Data
+
+sf_trees <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv')
+
+tuesdata <- tidytuesdayR::tt_load('2020-01-28') 
+tuesdata <- tidytuesdayR::tt_load(2020, week = 5)
+
+
+sf_trees <- tuesdata$sf_trees
+
+states <- map_data("state") %>% 
+  filter(region == "california")
+
+county <- map_data("county") %>% 
+  filter(region == "california") %>% 
+  filter(subregion == "san francisco") 
+
+
+
+Sftree <- sf_trees %>% 
+  select(tree_id, species, latitude, longitude) %>% 
+  filter(longitude <= '-125') %>% 
+  filter(latitude >= '37.6') %>% 
+ # filter(tree_id >= 3000 & tree_id <= 5000) 
+  filter(species == "Prunus serrulata 'Kwanzan' :: Kwanzan Flowering Cherry") #%>% 
+ #filter(tree_id == '3000' | tree_id == '4500')
+
+```
+# Make a Map 
+```{r, warning=FALSE, message=FALSE}
+ggplot() +
+  geom_polygon(data = county, aes(x =long, 
+                                  y= lat, 
+                                  group= group),
+               color = "black",
+               fill= "transparent") +
+  geom_point(data= Sftree, aes(x= longitude, 
+                               y= latitude,
+                               color = species)) +
+  guides(color=FALSE) +
+  labs(x= "Longitude", y= "Latitude", title = "Tree Species Scattered Throughout San Francisco",
+       subtitle = "Kwanzan Flowering Cherry") +
+    theme_light() +
+  theme(plot.title = element_text(hjust = 0.5),
+         plot.subtitle=element_text(hjust=0.5)) 
+ 
+
+```
+
