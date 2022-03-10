@@ -8,7 +8,7 @@ library(tidyverse)
 library(here)
 library(ggsn)
 
-register_google(key = "AIzaSyDy7-ot5By_ZcI-XLkszZcHPbIaZow3zCA", write = TRUE) ### use own API key 
+register_google(key = "OUR KEY HERE", write = TRUE) ### use own API key. key removed to upload onto Git 
 
 ### Load Data
 ChemData <- read.csv(here("Week_7", "Data", "chemicaldata_maunalua.csv"))
