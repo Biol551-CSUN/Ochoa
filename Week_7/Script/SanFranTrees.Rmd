@@ -6,11 +6,12 @@ output:
   html_document:
     toc: TRUE
     toc_float: TRUE
-    theme: darkly
+    theme: simplex
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/',
+                      warning = FALSE, message = FALSE)
 ```
 
 # Intro 
@@ -58,7 +59,7 @@ Sftree <- sf_trees %>%
 
 ```
 # Make a Map 
-```{r, warning=FALSE, message=FALSE}
+```{r SFTrees, warning=FALSE, message=FALSE}
 ggplot() +
   geom_polygon(data = county, aes(x =long, 
                                   y= lat, 
@@ -71,9 +72,9 @@ ggplot() +
   guides(color=FALSE) +
   labs(x= "Longitude", y= "Latitude", title = "Tree Species Scattered Throughout San Francisco",
        subtitle = "Kwanzan Flowering Cherry") +
-    theme_light() +
+  theme_light() +
   theme(plot.title = element_text(hjust = 0.5),
-         plot.subtitle=element_text(hjust=0.5)) 
+        plot.subtitle=element_text(hjust=0.5)) 
  
 
 ```
