@@ -10,7 +10,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/',
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/', ### saving into Output folder 
                       warning = FALSE, message = FALSE)
 ```
 
@@ -32,7 +32,7 @@ library(ggplot2)
 ```{r, warning=FALSE, message=FALSE}
 # Get the Data
 
-sf_trees <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv')
+sf_trees <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv') ## loading in data 
 
 tuesdata <- tidytuesdayR::tt_load('2020-01-28') 
 tuesdata <- tidytuesdayR::tt_load(2020, week = 5)
@@ -40,40 +40,40 @@ tuesdata <- tidytuesdayR::tt_load(2020, week = 5)
 
 sf_trees <- tuesdata$sf_trees
 
-states <- map_data("state") %>% 
-  filter(region == "california")
+states <- map_data("state") %>%  ### Selecting states from from data 
+  filter(region == "california") ## filtering to California 
 
-county <- map_data("county") %>% 
-  filter(region == "california") %>% 
-  filter(subregion == "san francisco") 
+county <- map_data("county") %>% ## selecting for counties from map data 
+  filter(region == "california") %>% # filter to California 
+  filter(subregion == "san francisco") ## filter to SF from map data 
 
 
 
-Sftree <- sf_trees %>% 
-  select(tree_id, species, latitude, longitude) %>% 
-  filter(longitude <= '-125') %>% 
-  filter(latitude >= '37.6') %>% 
+Sftree <- sf_trees %>% # rename data set for selected and filtered data 
+  select(tree_id, species, latitude, longitude) %>% ## selecting columns from data set 
+  filter(longitude <= '-125') %>% # Filtering longitude less than or equal to -125
+  filter(latitude >= '37.6') %>% # Filter latitude greater than or equal to 37.6
  # filter(tree_id >= 3000 & tree_id <= 5000) 
-  filter(species == "Prunus serrulata 'Kwanzan' :: Kwanzan Flowering Cherry") #%>% 
+  filter(species == "Prunus serrulata 'Kwanzan' :: Kwanzan Flowering Cherry") # Filtering for specific species 
  #filter(tree_id == '3000' | tree_id == '4500')
 
 ```
 # Make a Map 
 ```{r SFTrees, warning=FALSE, message=FALSE}
 ggplot() +
-  geom_polygon(data = county, aes(x =long, 
+  geom_polygon(data = county, aes(x =long, ## geom_polygon used to create a map 
                                   y= lat, 
-                                  group= group),
-               color = "black",
-               fill= "transparent") +
+                                  group= group), ## group = group always required to connect points 
+               color = "black", # black outlines 
+               fill= "transparent") + # transparent dot points 
   geom_point(data= Sftree, aes(x= longitude, 
                                y= latitude,
-                               color = species)) +
-  guides(color=FALSE) +
+                               color = species)) + ## creating points by filtered species 
+  guides(color=FALSE) + ## remove guides on side 
   labs(x= "Longitude", y= "Latitude", title = "Tree Species Scattered Throughout San Francisco",
-       subtitle = "Kwanzan Flowering Cherry") +
+       subtitle = "Kwanzan Flowering Cherry") + ## labeling 
   theme_light() +
-  theme(plot.title = element_text(hjust = 0.5),
+  theme(plot.title = element_text(hjust = 0.5), ## centering title 
         plot.subtitle=element_text(hjust=0.5)) 
  
 
