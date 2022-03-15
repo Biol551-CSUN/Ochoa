@@ -1,0 +1,134 @@
+---
+title: "Mario Cart Championships"
+author: "Ashlee Ochoa"
+date: "3/10/2022"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: journal
+ 
+---
+
+```{r setup, include=FALSE, fig.path = '../Output/', warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction 
+
+I will be using the Mario Kart data from [Tidy Tuesday 2021-05-25](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-05-25/readme.md) for our homework assignment on creating a good plot and bad plot.  
+
+# Loading Libraries 
+
+The libraries I will be using to complete the assignment. 
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(here)
+library(tidytuesdayR)
+library(tint)
+library(patchwork)
+```
+
+# Loading Data
+
+The Tidy Tuesday data I will be plotting. 
+```{r, message=FALSE, warning=FALSE, fig.path = '../Data/'}
+
+
+records <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-25/records.csv')
+drivers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-25/drivers.csv')
+
+
+
+```
+# Filtering out Data
+
+Wrangling selected data. 
+```{r, warning=FALSE, message=FALSE, fig.path = '../Data/'}
+remove <- c("Koopa Troopa Beach", "Moo Moo Farm", "Kalimari Desert", "Toad's Turnpike", "Banshee Boardwalk", "Rainbow Road", "Royal Raceway", "Choco Mountain", "Bowser's Castle", "Sherbet Land")
+
+WR <- records %>% 
+  filter(type== "Single Lap", # filtering selected data 
+         shortcut == "No",
+         system_played == "NTSC") %>% 
+   filter(!track %in% remove) #%>% ## removing specific track names 
+ # drop_na()
+  
+#remove <- c("Koopa Troopa Beach", "Moo Moo Farm", "Kalimari Desert", "Toad's Turnpike", "Banshee Boardwalk", "Rainbow Road", "Royal Raceway", "Choco Mountain", "Bowser's Castle", "Sherbet Land")
+
+  
+Driver <- drivers %>% 
+  filter(nation == "USA") %>% # selecting only from the US
+  drop_na()
+
+DataTable <- full_join(WR, Driver) %>% # joining both data sets 
+  drop_na()
+
+#Category <- c("Lugi Raceway", "Moo Moo Farm", "Koopa Troopa Beach", "Kalimari Desert")
+```
+
+# Plotting the Data 
+
+Plotting the race tracks against the time (in seconds) that it took each drivers to complete a single lap filled in by the players leader board position. 
+
+* All players from the US
+* All players used NTSC system
+* Non- Short cut record 
+* Single lap 
+
+## Good Plot 
+
+Factors of a good plot 
+
+* Distinct axis titles 
+* Creativity 
+* Clear labeling 
+
+Possible correction
+
+ * Track name position 
+ 
+```{r GoodPlot, message=FALSE, warning=FALSE, fig.align='center', fig.path = '../Output/'}
+
+ ggplot(data = DataTable, aes(x= track, y=time, # plotting of selected data 
+                             color = position))+
+  #geom_linerange(aes(y=position, xmin=0, xmax=50, color=position), size=2, alpha=0.5) +
+  geom_col(aes(y = Inf), fill = "pink") + 
+  geom_point(size =1.5, alpha = 1.0) + # altering point elements 
+  scale_color_viridis_b() + # altering color of position 
+  coord_polar(theta = "y") + # gives a circular element 
+  labs(x = "Track Name", y= "Time (s)", # labeling 
+       title= "Mario Kart World Record",
+       color = "Leader Board Position") +
+  #geom_text(vjust = -1) +
+  scale_x_discrete(expand = expand_scale(add = c(5,0))) +
+ # scale_color_brewer("Set3") +
+    theme_tint()
+
+```
+
+## Bad Plot 
+
+Ways in which this label is misleading and incorrect 
+
+* No clear labels or units 
+* Bad choice of graph 
+* No clear context or emphasis on what is being depicted- No direction 
+* Measure of uncertainty is unclear 
+* Very __Plain__
+
+```{r BadPlot, message=FALSE, warning=FALSE, fig.align='center', fig.path = '../Output/'}
+DataTable1 <- DataTable #assigning new name to data set 
+ggplot(data = DataTable1, aes(x= track, y=time,
+                             color = position)) +
+  geom_boxplot() +  
+    labs(x = "Track Name", y= "Time (s)",
+       title= "Mario Kart World Record") +
+  theme_void()
+```
+
+
+```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
