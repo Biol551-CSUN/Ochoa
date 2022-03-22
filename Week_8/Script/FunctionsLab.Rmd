@@ -1,0 +1,85 @@
+---
+title: "Functions Lab"
+author: "Ashlee"
+date: "3/17/2022"
+output: 
+  html_document:
+    theme: darkly
+
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/')
+```
+
+# Introduction 
+For todays lab assignment I will be using the site.characteristics.data from week 5 to create a function. 
+
+# Loading Libraries 
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(here)
+```
+# Loading Data
+```{r, warning=FALSE, message=FALSE}
+Data <- read_csv(here("Week_5", "Data", "site.characteristics.data.csv"))
+```
+# Wrangling 
+```{r}
+Data1 <- Data %>% 
+  pivot_wider(names_from = parameter.measured, ### pivot wider 
+              values_from = values)
+  
+
+Data2 <- Data %>% 
+  filter(name== "Creepy Tree" | name == "Public Beach" | name == "Manava") %>% ## filtering for three names 
+  filter(parameter.measured =="temp" | parameter.measured == "coral.cover" | parameter.measured == "algal.cover" | parameter.measured == "substrate.cover") ## filtering parameters 
+```
+# Plotting 
+The set function created titled "myplot" and the outputs are saved as "function" and "function2" respectively.
+
+```{r function, warning=FALSE, message=FALSE}
+myplot <- function(data, x, y) { ### creating a function based off the plotting details  
+#Data2 %>% 
+  ggplot(data, aes(x = {{x}}, y = {{y}}, fill= name)) + ### curly curly for x and y 
+  geom_col() +
+ # labs(x = "Parameter", y= "Values",
+   #    title = "Values of Parameters",
+    #   fill = "Name")+
+    theme_classic()
+  
+}
+
+#ggsave(here("Week_8", "Output", "function.png"))
+
+myplot(data= Data2, x = parameter.measured, y = values) + ## selecting x and y values 
+    labs(x = "Parameter", y= "Values", ## modifying the titles 
+       title = "Values of Parameters",
+       fill = "Name")
+```
+
+
+An example of the function with the x and y switched 
+```{r function2, warning=FALSE, message=FALSE}
+myplot(data = Data2, x= values, y= parameter.measured) + ## swapping the x and y values 
+    labs(x = "Values", y= "Parameters", ## altering the axis labels 
+       title = "Values of Parameters",
+       fill = "Name")
+#ggsave(here("Week_8", "Output", "function2.png"))
+```
+# An example of another function 
+
+Using "sum" to add values together 
+```{r}
+sum <- function(x, y) {  ##function based off a sum value 
+  sum <- x+y  
+  return(sum) 
+}
+
+sum(x=76, y= 89)
+```
+```{r}
+sum(4, 25)
+```
+
