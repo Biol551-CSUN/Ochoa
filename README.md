@@ -12,6 +12,16 @@ Information will be separate by folder starting with the corresponding week (ie 
 
 [Week_4](https://github.com/Biol551-CSUN/Ochoa/tree/main/Week_4)
 
+[Week 5](https://github.com/Biol551-CSUN/Ochoa/tree/main/Week_5)
+
+[Week_6](https://github.com/Biol551-CSUN/Ochoa/tree/main/Week_6)
+
+[Week_7](https://github.com/Biol551-CSUN/Ochoa/tree/main/Week_7)
+
+[Week_8](https://github.com/Biol551-CSUN/Ochoa/tree/main/Week_8)
+
+[Week_10](https://github.com/Biol551-CSUN/Ochoa/tree/main/Week_10)
+
 ### ReadME created on 2022.02.04 ####
 ### GO DATA SCIENCE ####
 
