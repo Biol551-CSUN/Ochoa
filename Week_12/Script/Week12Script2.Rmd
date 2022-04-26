@@ -5,29 +5,29 @@ date: "4/25/2022"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/')
 ```
 
 Today we will be working with factors. 
 A factor is a specialized version of a character. 
 
 # Libraries 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(here)
 ```
 # Data 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 income_mean <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-09/income_mean.csv')
 ```
 To make something a factor you must use the factor function. 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 fruits<-factor(c("Apple", "Grape", "Banana"))
 fruits
 ```
 Working with starwars package 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 glimpse(starwars) 
 
 star_counts <- starwars %>% 
@@ -38,15 +38,15 @@ star_counts <- starwars %>%
 star_counts
 
 ```
-Creating plot 
-```{r}
+# Creating plot 
+```{r starcounts, warning=FALSE, message=FALSE}
 star_counts %>% 
   ggplot(aes(x = fct_reorder(species, n), y = n))+ # reorder the factor of species by n
   geom_col() +
   labs(x = "Species")
 ```
 Rendering Line Plots 
-```{r}
+```{r line graph, message=FALSE, warning=FALSE}
 glimpse(income_mean)
 
 total_income<-income_mean %>%
@@ -61,13 +61,13 @@ ggplot(aes(x = year, y = income_dollars_sum,
   labs(color = "income quantile")
 ```
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 x1 <- factor(c("Jan", "Mar", "Apr", "Dec"), levels = c("Jan", "Mar", "Apr", "Dec")) # levels are the order you want it to be 
 x1
 
 ```
 Subsetting data with factors
-```{r}
+```{r, warning=FALSE, message=FALSE}
 starwars_clean<-starwars %>% 
   filter(!is.na(species)) %>% # remove the NAs
   count(species, sort = TRUE) %>%

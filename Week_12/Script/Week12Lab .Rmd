@@ -1,0 +1,59 @@
+---
+title: "Working with Intertidal data"
+author: "Ashlee"
+date: "4/26/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/')
+```
+
+For today's lab assignment I will be working with the intertidal data sets 
+
+# Libraries 
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(here)
+library(janitor)
+library(forcats)
+library(dplyr)
+```
+# Data 
+```{r, warning=FALSE, message=FALSE}
+intertidaldata_lat <- read_csv(here("Week_12/Data", "intertidaldata_latitude.csv"))
+intertidaltdata <- read_csv(here("Week_12/Data", "intertidaldata.csv"))
+# loading in data 
+glimpse(intertidaldata_lat)
+glimpse(intertidaltdata)
+```
+# Wrangling and Graphing 
+```{r LatPerSite, warning=FALSE, message=FALSE}
+it_lat <- intertidaldata_lat %>% 
+  clean_names() # cleaning variable names 
+
+itdata <- intertidaltdata %>% 
+  clean_names() %>% # clean variable names 
+  remove_empty() %>% # remove empty rows and columns 
+  remove_constant() # Removes columns with single constant value 
+
+data <- full_join(it_lat, itdata) ## joining data together 
+
+updata<- data %>% 
+  filter(site == "Starfish Point" | site== "Dana Point" | site == "Crystal Cove" | site== "Pyramid Point") %>% # filtering for 4 sites 
+ ### factor(c("Starfish Point", "Dana Point", "Crystal Cove", "Pyramid Point"),
+     ###    levels = c("Crystal Cove", "Dana Point", "Starfish Point", "Pyramid Point"))
+  ggplot(aes(x= fct_inorder(site, latitude), y =latitude)) + ## creating a factor of latitude in descending order 
+  geom_point() +
+  labs(x = "Site", y = "Latitude", 
+       title = "Latitude per Site")+
+  theme_light()+
+  theme(plot.title = element_text(hjust = 0.5)) #centering title 
+
+updata
+
+view(updata)
+
+```
+
