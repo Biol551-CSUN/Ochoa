@@ -1,0 +1,122 @@
+---
+title: "Iterative Data"
+author: "Ashlee"
+date: "4/26/2022"
+output: html_document
+---
+Today we will be working on iterative data with the purr package 
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Library 
+```{r}
+library(tidyverse)
+library(here)
+```
+# Using loops 
+code for what is one year.
+```{r}
+print(paste("The year is", 2000))
+```
+Put it in for a loop
+```{r}
+years <-c(2015:2021)
+for (i in years){
+  print(paste("This year is", i)) # loop over i
+} # index is the letter i, sequence is years 
+
+# Pre-allocate space for loop 
+# empty matrix 
+year_data <- data.frame(matrix(ncol = 2, nrow = length(years)))
+
+# add column names
+colnames(year_data) <- c("year", "year_name")
+year_data ## start to set up loop 
+
+for (i in 1:length(years)) { #set up the for loop where i is the index 
+  year_data$year_name[i] <- paste("The year is", years[i]) ## loop over i 
+  year_data$year[i] <- years[i] # loop over year
+  
+}
+year_data
+```
+Use loops to read in multiple .csv files 
+```{r}
+testdata <- read_csv(here("Week_13", "Data", "cond_data", "011521_CT316_1pcal.csv"))
+```
+list files in a directory 
+```{r}
+# point to the location on the computer of the folder
+CondPath<-here("Week_13", "Data", "cond_data")
+# list all the files in that path with a specific pattern
+# In this case we are looking for everything that has a .csv in the filename
+# you can use regex to be more specific if you are looking for certain patterns in filenames
+files <- dir(path = CondPath,pattern = ".csv")
+files
+```
+pre-allocate space for the loop
+```{r}
+# pre-allocate space
+# make an empty dataframe that has one row for each file and 3 columns
+cond_data<-data.frame(matrix(nrow = length(files), ncol = 3)) # number of columns 
+# give the dataframe column names
+colnames(cond_data)<-c("filename","mean_temp", "mean_sal")
+cond_data
+```
+wriate a code to calcualte mean and build out 
+```{r}
+raw_data <- read_csv(paste0(CondPath,"/",files[1])) # test by reading in first file 
+
+head(raw_data)
+```
+Turn into a for loop
+```{r}
+for (i in 1:length(files)) { # loop over 1:3 the number of the files 
+raw_data<-read_csv(paste0(CondPath,"/",files[i]))
+#glimpse(raw_data)
+cond_data$filename[i]<-files[i]
+cond_data$mean_temp[i] <- mean(raw_data$Temperature, na.rm = TRUE)
+cond_data$mean_sal[i] <-mean(raw_data$Salinity, na.rm = TRUE)
+  
+}
+```
+Examples 
+```{r}
+1:10 %>% # a vector from 1 to 10 (we are going to do this 10 times) %>% # the vector to iterate over
+  map(rnorm, n = 15) %>% # calculate 15 random numbers based on a normal distribution in a list
+  map_dbl(mean) # caluclate the mean 
+
+## different example
+1:10 %>% # list 1:10
+  map(function(x) rnorm(15, x)) %>% # make your own function
+  map_dbl(mean)
+
+# last example
+1:10 %>%
+  map(~ rnorm(15, .x)) %>% # changes the arguments inside the function
+  map_dbl(mean)
+```
+Bring in files using purr instead of a for loop 
+```{r}
+# must point to location on computer 
+CondPath <- here("Week_13", "Data", "cond_data")
+files <- dir(path = CondPath, pattern = ".csv")
+
+files
+
+files <- dir(path = CondPath,pattern = ".csv", full.names = TRUE)
+#save the entire path name
+files
+
+# Calculate means
+data<-files %>%
+  set_names()%>% # set's the id of each list to the file name
+  map_df(read_csv,.id = "filename") %>%  # map everything to a dataframe and put the id in a column called filename
+  group_by(filename) %>% 
+  summarise(mean_temp= mean(Temperature, na.rm= TRUE),
+            mean_sal= mean(Salinity, na.rm= TRUE))
+
+data
+```
+
