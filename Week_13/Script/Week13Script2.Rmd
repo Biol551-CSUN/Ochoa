@@ -1,0 +1,152 @@
+---
+title: "Intro to models"
+author: "Ashlee"
+date: "4/28/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/')
+```
+
+# Introduction
+Today we will have a basic introduction to working with models. 
+Intro to basic linear modeling
+Viewing results in base R, broom, and modelsummary
+Running many models at the same time with purrr
+Intro to tidy models
+
+# Libraries 
+```{r}
+library(tidyverse)
+library(here)
+library(palmerpenguins)
+library(broom)
+library(performance)
+library(modelsummary)
+library(tidymodels)
+```
+Anatomy of basic linear model 
+To run a simple linear model you use the following formula:
+```{r}
+#mod <- lm(y~m, data = df)
+```
+lm = linear model, y = dependent variable, x = independent variable(s), df = dataframe.
+You read this as y is a function of x
+
+Model the penguin dataset
+```{r}
+# Linear model of Bill depth ~ Bill length by species
+Peng_mod<-lm(bill_length_mm ~ bill_depth_mm*species, data = penguins)
+```
+
+Always check assumptions with performance 
+```{r check}
+check_model(Peng_mod) # check assumptions of an lm model
+```
+View Results: base R
+ANOVA Table 
+```{r}
+anova(Peng_mod)
+summary(Peng_mod)
+```
+View Results with broom 
+```{r}
+# Tidy gives you coefficients
+coeffs<-tidy(Peng_mod) # just put tidy() around it
+coeffs
+
+
+# Glance extracts R-squared, AICs, etc of the model 
+# tidy r2, etc
+results<-glance(Peng_mod) 
+results
+
+# Augment adds residuals and predicted values to original data 
+# tidy residuals, etc
+resid_fitted<-augment(Peng_mod)
+resid_fitted
+```
+Results in {modelsummary}
+* creates tables and plots to summarize statistical models and data in R.
+
+* modelsummary includes two families of functions:
+
+Model Summary
+modelsummary: Regression tables with side-by-side models.
+modelsummary_wide: Regression tables for categorical response models or grouped coefficients.
+modelplot: Coefficient plots.
+
+Data Summary
+datasummary: Powerful tool to create (multi-level) cross-tabs and data summaries.
+datasummary_balance: Balance tables with subgroup statistics and difference in means (aka “Table 1”).
+datasummary_correlation: Correlation tables.
+datasummary_skim: Quick overview (“skim”) of a dataset.
+datasummary_df: Turn dataframes into nice tables with titles, notes, etc.
+
+Want to compare two penguin models 
+```{r}
+# New model
+Peng_mod_noX<-lm(bill_length_mm ~ bill_depth_mm, data = penguins)
+#Make a list of models and name them
+models<-list("Model with interaction" = Peng_mod,
+             "Model with no interaction" = Peng_mod_noX)
+#Save the results as a .docx
+modelsummary(models, output = here("Week_13","Output","table.docx"))
+```
+
+Modelplot 
+Canned coefficient modelplots
+```{r Modelplot}
+library(wesanderson)
+modelplot(models) +
+    labs(x = 'Coefficients', 
+         y = 'Term names') +
+    scale_color_manual(values = wes_palette('Darjeeling1'))
+
+```
+Many Models with purr, dplyr, and broom 
+
+Compare lots of different models at the same time and view results. 
+An example using purr with many lists 
+```{r}
+ models<- penguins %>%
+  ungroup()%>% # the penguin data are grouped so we need to ungroup them
+    nest(-species) %>%  # nest all the data by species. creates a list/ tibble for all species 
+  mutate(fit = map(data, ~lm(bill_length_mm~body_mass_g,data = .)))
+## creates model output for each individual species. Use map bc same thing over and over again 
+models
+
+models$fit # shows you each of the 3 models
+
+# View the results. First, let's mutate the models list so that we have a tidy coefficient dataframe (using tidy()) and a tidy model results dataframe (using glance())
+ results<-models %>%
+   mutate(coeffs = map(fit, tidy), # look at the coefficients
+          modelresults = map(fit, glance))  %>% # R2 and others
+   select(species, coeffs, modelresults) %>% # only keep the results
+   unnest() # put it back in a dataframe and specify which columns to unnest
+
+results # view the results 
+```
+
+Tidymodels 
+Uses layering to create models. Start by specifying functional form 
+```{r}
+linear_reg() # creating linear regression 
+```
+
+We need to set the engine for what type of linear regression we are modeling. 
+```{r reg}
+lm_mod<-linear_reg() %>%
+  set_engine("lm") %>%
+  fit(bill_length_mm ~ bill_depth_mm*species, data = penguins) %>%  # next need to add model fit 
+  tidy() %>% ## need to add tidy 
+  ggplot()+
+    geom_point(aes(x = term, y = estimate))+
+    geom_errorbar(aes(x = term, ymin = estimate-std.error,
+                      ymax = estimate+std.error), width = 0.1 )+
+  coord_flip()
+
+lm_mod
+```
+ 
