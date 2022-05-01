@@ -1,0 +1,31 @@
+---
+title: "Iterative coding"
+author: "Ashlee"
+date: "5/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/')
+```
+
+# Introduction 
+For this homework assignment I will be working with the data on timeseries of temperature and light data collected in tide pools in Oregon. 
+
+# Libraries 
+```{r}
+library(here)
+library(tidyverse)
+library(broom)
+library(performance)
+library(modelsummary)
+```
+
+# Data
+```{r}
+TP1 <- read_csv(here("Week_13","Data", "homework", "TP1.csv"))
+TP2 <- read_csv(here("Week_13", "Data", "homework", "TP2.csv"))
+TP3 <- read_csv(here("Week_13", "Data", "homework", "TP3.csv"))
+TP4 <- read_csv(here("Week_13", "Data", "homework", "TP4.csv"))
+```
+
