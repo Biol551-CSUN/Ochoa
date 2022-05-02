@@ -1,31 +1,75 @@
 ---
-title: "Iterative coding"
+title: "Iterative Coding using temperature and light data"
 author: "Ashlee"
 date: "5/1/2022"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/')
 ```
 
 # Introduction 
-For this homework assignment I will be working with the data on timeseries of temperature and light data collected in tide pools in Oregon. 
+For this homework assignment I will be working with the data on timeseries of temperature and light data collected in tide pools in Oregon to calculate the mean and standard deviation of temperature and light. 
 
 # Libraries 
 ```{r}
 library(here)
 library(tidyverse)
-library(broom)
-library(performance)
-library(modelsummary)
 ```
 
 # Data
 ```{r}
-TP1 <- read_csv(here("Week_13","Data", "homework", "TP1.csv"))
-TP2 <- read_csv(here("Week_13", "Data", "homework", "TP2.csv"))
-TP3 <- read_csv(here("Week_13", "Data", "homework", "TP3.csv"))
-TP4 <- read_csv(here("Week_13", "Data", "homework", "TP4.csv"))
+## Creating path directory for data 
+Data <- here("Week_13", "Data", "homework") # Creating a path 
+files <- dir(path = Data, pattern = ".csv") # Direct path 
+filesU <- dir(path = Data ,pattern = ".csv", full.names = TRUE) # using full name for map function
+
+#TP1 <- read_csv(here("Week_13","Data", "homework", "TP1.csv"))
+#TP2 <- read_csv(here("Week_13", "Data", "homework", "TP2.csv"))
+#TP3 <- read_csv(here("Week_13", "Data", "homework", "TP3.csv"))
+#TP4 <- read_csv(here("Week_13", "Data", "homework", "TP4.csv"))
 ```
+# Creating a loop 
+```{r loop}
+#Data <- full_join(TP1, TP2)
+#Data2 <- full_join(TP3, TP4)
+
+#DataU <- full_join(Data, Data2)
+
+# Creating empty data frame 
+HW <- data.frame(matrix(nrow = length(files), ncol = 5)) 
+colnames(HW) <- c("file", "mean_temp", "std_temp", "mean_light", "std_light") #naming columns in the data set 
+
+for (i in 1:length(files)) { 
+  RData <- read_csv(here(Data, files[i])) #reading in data
+  HW$file[i]<-files[i] # paste entry in new dataframe
+  HW$mean_temp[i]<- mean(RData$Temp.C, na.rm = TRUE) # calculate mean and paste 
+  HW$std_temp[i]<- sd(RData$Temp.C, na.rm = TRUE) # calculate standard deviation and paste 
+  HW$mean_light[i]<- mean(RData$Intensity.lux, na.rm = TRUE) # calculate mean and paste 
+  HW$std_light[i]<- sd(RData$Intensity.lux, na.rm = TRUE) # calculate standard deviation and paste 
+}
+
+
+knitr::kable(HW, caption = "Mean and Standard Deviation of Temperature and Light") # view table
+
+```
+# Creating a map
+```{r map}
+# Using purrr package 
+Map <- filesU %>% # Creating new data frame
+  set_names() %>%  #naming vector 
+  map_df(read_csv, .id = "file") %>% 
+  mutate(file=gsub(".csv","",basename(file))) %>% # removes full name and path
+  group_by(file) %>% # groups for next function
+  summarise(mean_temp = mean(Temp.C, na.rm = TRUE), # calculate mean
+            std_temp= sd(Temp.C, na.rm = TRUE), # calculate standard deviation
+            mean_light = mean(Intensity.lux, na.rm = TRUE), #calculate mean
+            std_light= sd(Intensity.lux, na.rm = TRUE)) # calculate standard deviation
+
+knitr::kable(Map, caption = "Mean and Standard Deviation of Temperature and Light") # view table
+
+```
+
+
 
